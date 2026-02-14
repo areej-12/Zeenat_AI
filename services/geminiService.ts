@@ -1,18 +1,25 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { UserProfile, SwarmResult } from "../types";
+import { UserProfile, SwarmResult, Language } from "../types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
 export const runGuardianAnalysis = async (
   profile: UserProfile,
-  input: string | object
+  input: string | object,
+  language: Language
 ): Promise<SwarmResult> => {
+  const languageInstruction = language === Language.UR 
+    ? "Respond entirely in Urdu (اردو). Use standard Urdu script." 
+    : "Respond entirely in English.";
+
   const prompt = `
     Act as Zeenat-AI: The 360 Guardian. 
     You are a swarm of experts analyzing a situation for a Pakistani woman.
 
-    USER PROFILE (Agentic Memory):
+    LANGUAGE REQUIREMENT: ${languageInstruction}
+
+    USER PROFILE:
     - Age: ${profile.age}
     - District: ${profile.district}
     - Marital Status: ${profile.maritalStatus}
@@ -22,10 +29,12 @@ export const runGuardianAnalysis = async (
     CONTEXT: ${typeof input === 'string' ? input : JSON.stringify(input)}
 
     SWARM ROLES:
-    1. [Advocate]: Analyze civil law (Protection against Harassment, Family Laws, Domestic Violence Act 2026). Provide a Safety Score (0-100) and district-specific stats.
-    2. [Sharia Expert]: Provide religious perspective on rights (Haq Mehr, Nafaqah, Tafweez).
-    3. [Health Agent]: (If applicable based on profile) Provide priority health screenings or mental wellness advice.
-    4. [NGO Bridge]: Identify the most relevant NGO from our database based on the risk level.
+    1. [Advocate]: Analyze civil law. 
+       CRITICAL TASK: Audit "Column 17" (Right to Education/Work). Explain its legal validity in Pakistan. If it's missing or restricted, provide a path to reclaim it via a 'Supplemental Deed'.
+    2. [Empowerment Auditor]: Specifically check if the "Right to Continue Education" is mentioned. Provide a separate summary of this right.
+    3. [Sharia Expert]: Provide religious perspective on the husband's duty to permit education/work if agreed upon.
+    4. [NGO Bridge]: Identify relevant NGO.
+    5. [Case Preparer]: DRAFT A PROFESSIONAL DOCUMENT.
 
     Output must be JSON.
   `;
@@ -49,6 +58,15 @@ export const runGuardianAnalysis = async (
             },
             required: ["analysis", "safetyScore", "riskLevel", "stats", "legalRoadmap"]
           },
+          empowermentAudit: {
+            type: Type.OBJECT,
+            properties: {
+              educationRightStatus: { type: Type.STRING },
+              workRightStatus: { type: Type.STRING },
+              remedialAction: { type: Type.STRING }
+            },
+            required: ["educationRightStatus", "workRightStatus", "remedialAction"]
+          },
           shariaExpert: {
             type: Type.OBJECT,
             properties: {
@@ -57,13 +75,6 @@ export const runGuardianAnalysis = async (
               guidance: { type: Type.STRING }
             },
             required: ["context", "principles", "guidance"]
-          },
-          healthAgent: {
-            type: Type.OBJECT,
-            properties: {
-              recommendations: { type: Type.ARRAY, items: { type: Type.STRING } },
-              priorityLevel: { type: Type.STRING }
-            }
           },
           ngoBridge: {
             type: Type.OBJECT,
@@ -78,9 +89,18 @@ export const runGuardianAnalysis = async (
               }
             },
             required: ["recommendedNgo"]
+          },
+          draftedDocument: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              content: { type: Type.STRING },
+              type: { type: Type.STRING }
+            },
+            required: ["title", "content", "type"]
           }
         },
-        required: ["advocate", "shariaExpert", "ngoBridge"]
+        required: ["advocate", "empowermentAudit", "shariaExpert", "ngoBridge", "draftedDocument"]
       }
     }
   });

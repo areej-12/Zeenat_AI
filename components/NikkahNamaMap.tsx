@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { NIKKAH_COLUMNS, COLORS } from '../constants';
+import { NIKKAH_COLUMNS } from '../constants';
 
 interface NikkahNamaMapProps {
   onHotspotClick: (id: number) => void;
@@ -9,101 +9,127 @@ interface NikkahNamaMapProps {
 const NikkahNamaMap: React.FC<NikkahNamaMapProps> = ({ onHotspotClick }) => {
   const [hovered, setHovered] = useState<number | null>(null);
 
-  // Grouping hotspots into two columns (simulating the two provided pages)
-  const page1Hotspots = [1, 2, 3, 4, 5, 6, 13, 14, 15];
-  const page2Hotspots = [16, 17, 18, 19, 20, 21, 22, 24, 25];
+  const page1Hotspots = [
+    { id: 1, top: '15%', left: '50%' },
+    { id: 2, top: '23%', left: '50%' },
+    { id: 3, top: '31%', left: '50%' },
+    { id: 4, top: '39%', left: '50%' },
+    { id: 5, top: '47%', left: '50%' },
+    { id: 6, top: '55%', left: '50%' },
+    { id: 13, top: '63%', left: '50%' },
+    { id: 14, top: '71%', left: '50%' },
+    { id: 15, top: '79%', left: '50%' },
+  ];
 
-  const renderHotspots = (ids: number[], page: number) => {
-    return ids.map((id, index) => {
-      // Logic to calculate top based on row index (approximate grid alignment)
-      const topOffset = 15 + (index * 8); 
-      const leftOffset = page === 1 ? 40 : 40;
+  const page2Hotspots = [
+    { id: 16, top: '15%', left: '50%' },
+    { id: 17, top: '23%', left: '50%', priority: true }, // Column 17 Highlight
+    { id: 18, top: '31%', left: '50%' },
+    { id: 19, top: '39%', left: '50%' },
+    { id: 20, top: '47%', left: '50%' },
+    { id: 21, top: '55%', left: '50%' },
+    { id: 22, top: '63%', left: '50%' },
+    { id: 24, top: '71%', left: '50%' },
+    { id: 25, top: '79%', left: '50%' },
+  ];
 
-      return (
+  const renderHotspots = (spots: { id: number; top: string; left: string; priority?: boolean }[]) => {
+    return spots.map((spot) => (
+      <div 
+        key={spot.id}
+        className="absolute z-30 transform -translate-x-1/2 -translate-y-1/2"
+        style={{ top: spot.top, left: spot.left }}
+      >
         <div 
-          key={id}
-          className="absolute z-20 group/spot"
-          style={{ top: `${topOffset}%`, left: `${leftOffset}%` }}
-          onMouseEnter={() => setHovered(id)}
+          className="relative flex items-center justify-center cursor-pointer group"
+          onMouseEnter={() => setHovered(spot.id)}
           onMouseLeave={() => setHovered(null)}
-          onClick={() => onHotspotClick(id)}
+          onClick={() => onHotspotClick(spot.id)}
         >
-          <div className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all duration-500 border-2 border-white shadow-lg ${
-            hovered === id 
-              ? 'bg-[#b2935b] scale-150 rotate-[360deg] shadow-[#b2935b]/40' 
-              : 'bg-[#064e3b] hover:bg-[#053d2e]'
-          }`}>
-            <span className="text-white text-[7px] font-black">{id}</span>
-          </div>
+          {/* Visual Priority Pulse for Column 17 */}
+          {spot.priority && (
+            <div className="absolute w-12 h-12 rounded-full bg-[#b2935b]/30 animate-ping opacity-75"></div>
+          )}
           
-          {hovered === id && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white p-4 rounded-2xl shadow-2xl border border-slate-100 w-56 z-50 animate-in fade-in zoom-in slide-in-from-bottom-2 duration-300">
-              <div className="flex items-center gap-2 mb-2">
-                 <span className="w-5 h-5 bg-[#064e3b] text-white rounded-full flex items-center justify-center text-[8px] font-bold">{id}</span>
-                 <h4 className="urdu-text text-[11px] font-black text-[#064e3b]">{NIKKAH_COLUMNS[id]?.urdu}</h4>
+          <div className={`absolute w-8 h-8 rounded-full transition-all duration-300 opacity-0 ${
+            hovered === spot.id ? 'bg-[#b2935b]/20 scale-150 opacity-100' : ''
+          }`}></div>
+          
+          <button className={`w-6 h-6 rounded-full flex items-center justify-center shadow-sm transition-all duration-300 relative z-10 border ${
+            spot.priority ? 'border-[#b2935b] border-2 shadow-[#b2935b]/30 shadow-lg' : 'border-white/50'
+          } ${
+            hovered === spot.id 
+              ? 'bg-[#b2935b] scale-110 shadow-md' 
+              : spot.priority ? 'bg-[#b2935b]' : 'bg-[#064e3b]'
+          }`}>
+            <span className="text-white text-[9px] font-bold">{spot.id}</span>
+          </button>
+          
+          {hovered === spot.id && (
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white p-4 rounded-[1.5rem] shadow-2xl border border-slate-50 w-56 z-50 animate-in fade-in zoom-in slide-in-from-bottom-2 duration-200">
+              <div className="flex flex-col gap-1">
+                 <div className="flex items-center justify-between border-b border-slate-50 pb-1 mb-1">
+                    <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Col {spot.id}</span>
+                    {spot.priority && <span className="text-[7px] font-black text-[#b2935b] uppercase tracking-tighter bg-[#b2935b]/10 px-2 py-0.5 rounded-full">Zeenat Priority</span>}
+                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold shrink-0 ${spot.priority ? 'bg-[#b2935b]' : 'bg-[#064e3b]'} text-white`}>{spot.id}</span>
+                 </div>
+                 <h4 className="urdu-text text-base font-bold text-[#064e3b] leading-tight">
+                   {NIKKAH_COLUMNS[spot.id]?.urdu}
+                 </h4>
+                 <p className="text-[9px] text-slate-500 leading-tight line-clamp-2">
+                   {NIKKAH_COLUMNS[spot.id]?.label}
+                 </p>
+                 <div className="mt-2">
+                    <div className={`${spot.priority ? 'bg-[#b2935b]' : 'bg-[#064e3b]'} text-white text-center py-1 rounded-lg text-[7px] font-black uppercase tracking-widest`}>
+                      Tap to Audit
+                    </div>
+                 </div>
               </div>
-              <p className="text-[10px] text-slate-500 leading-relaxed italic mb-2 border-b border-slate-50 pb-2">{NIKKAH_COLUMNS[id]?.label}</p>
-              <p className="text-[9px] text-slate-400 font-medium">{NIKKAH_COLUMNS[id]?.desc}</p>
             </div>
           )}
         </div>
-      );
-    });
+      </div>
+    ));
   };
 
+  const renderBackgroundLines = () => (
+    <div className="relative z-10 w-full px-5 mt-6 space-y-2.5">
+      {[...Array(9)].map((_, i) => (
+        <div key={i} className="flex gap-2.5">
+          <div className="w-1/6 h-3 bg-slate-50 rounded-sm"></div>
+          <div className="w-5/6 h-3 bg-slate-50 rounded-sm"></div>
+        </div>
+      ))}
+      <div className="pt-3 space-y-2.5">
+          <div className="w-full h-3 bg-slate-50 rounded-sm"></div>
+          <div className="w-full h-3 bg-slate-50 rounded-sm"></div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-100 rounded-[3rem]">
-        {/* PAGE 1: COLUMNS 1-15 */}
-        <div className="relative aspect-[3/4] bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-          <div className="absolute inset-0 p-8">
-            <div className="border-b-2 border-slate-200 pb-2 mb-4 text-center">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Page 1: 1-15</h4>
+    <div className="bg-slate-50/30 p-4 md:p-8 rounded-[2.5rem] shadow-inner overflow-x-auto scrollbar-hide">
+      <div className="flex flex-row gap-6 min-w-[650px] justify-center items-start">
+        <div className="relative w-[300px] shrink-0">
+          <div className="bg-white rounded-[2rem] shadow-lg overflow-hidden aspect-[1/1.4] relative p-6 border border-slate-100">
+            <div className="absolute top-0 left-0 w-full h-0.5 bg-[#064e3b]/5"></div>
+            <div className="text-center mb-4 border-b border-slate-50 pb-2">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Page 1: 1-15</h4>
             </div>
-            {/* Table Mockup */}
-            <div className="space-y-3">
-              {[...Array(15)].map((_, i) => (
-                <div key={i} className="flex border-b border-slate-100 pb-1">
-                  <div className="w-8 h-4 bg-slate-50 rounded-sm"></div>
-                  <div className="flex-1 h-4 bg-slate-50/50 rounded-sm ml-2"></div>
-                </div>
-              ))}
-            </div>
+            {renderBackgroundLines()}
+            <div className="absolute inset-0 z-20">{renderHotspots(page1Hotspots)}</div>
           </div>
-          {renderHotspots(page1Hotspots, 1)}
-          <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent pointer-events-none"></div>
         </div>
 
-        {/* PAGE 2: COLUMNS 16-25 */}
-        <div className="relative aspect-[3/4] bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-          <div className="absolute inset-0 p-8">
-            <div className="border-b-2 border-slate-200 pb-2 mb-4 text-center">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Page 2: 16-25</h4>
+        <div className="relative w-[300px] shrink-0">
+          <div className="bg-white rounded-[2rem] shadow-lg overflow-hidden aspect-[1/1.4] relative p-6 border border-slate-100">
+            <div className="absolute top-0 left-0 w-full h-0.5 bg-[#b2935b]/10"></div>
+            <div className="text-center mb-4 border-b border-slate-50 pb-2">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Page 2: 16-25</h4>
             </div>
-            {/* Table Mockup */}
-            <div className="space-y-3">
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className="flex border-b border-slate-100 pb-1">
-                  <div className="w-8 h-4 bg-slate-50 rounded-sm"></div>
-                  <div className="flex-1 h-4 bg-slate-50/50 rounded-sm ml-2"></div>
-                </div>
-              ))}
-            </div>
-            {/* Signature Block Simulation */}
-            <div className="mt-8 grid grid-cols-2 gap-4">
-              <div className="h-10 border-t border-slate-300 text-[8px] text-slate-300 pt-1">Groom Signature</div>
-              <div className="h-10 border-t border-slate-300 text-[8px] text-slate-300 pt-1">Bride Signature</div>
-            </div>
+            {renderBackgroundLines()}
+            <div className="absolute inset-0 z-20">{renderHotspots(page2Hotspots)}</div>
           </div>
-          {renderHotspots(page2Hotspots, 2)}
-          <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent pointer-events-none"></div>
-        </div>
-      </div>
-      
-      <div className="flex justify-center">
-        <div className="bg-white/80 backdrop-blur-md px-8 py-3 rounded-full border border-slate-200 text-[10px] text-[#064e3b] font-black uppercase tracking-[0.2em] shadow-lg flex items-center gap-3">
-          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-          360° Column Audit Mode Active
         </div>
       </div>
     </div>

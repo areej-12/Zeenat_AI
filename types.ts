@@ -15,13 +15,6 @@ export interface UserProfile {
   isEmployed: boolean;
 }
 
-export interface NikkahNamaHotspot {
-  id: number;
-  label: string;
-  urduLabel: string;
-  description: string;
-}
-
 export interface SwarmResult {
   advocate: {
     analysis: string;
@@ -29,6 +22,11 @@ export interface SwarmResult {
     riskLevel: 'Low' | 'Medium' | 'High';
     stats: string;
     legalRoadmap: string[];
+  };
+  empowermentAudit: {
+    educationRightStatus: string;
+    workRightStatus: string;
+    remedialAction: string;
   };
   shariaExpert: {
     context: string;
@@ -45,5 +43,10 @@ export interface SwarmResult {
       contact: string;
       reason: string;
     };
+  };
+  draftedDocument?: {
+    title: string;
+    content: string;
+    type: 'Supplemental Deed' | 'NADRA Application' | 'Legal Brief';
   };
 }

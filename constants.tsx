@@ -21,8 +21,8 @@ export const NIKKAH_COLUMNS: { [key: number]: { label: string; urdu: string; des
   13: { label: "Total Haq Mehr", urdu: "حق مہر کی کل رقم", desc: "Total amount of dower promised to the bride." },
   14: { label: "Prompt/Deferred Split", urdu: "معجل اور مؤجل کی تقسیم", desc: "How much dower is paid immediately and how much is deferred." },
   15: { label: "Paid at Marriage", urdu: "نکاح کے وقت ادائیگی", desc: "Amount of dower paid at the time of the ceremony." },
-  16: { label: "Property in lieu of Mehr", urdu: "مہر کے بدلے جائیداد", desc: "Details of any property given instead of cash dower." },
-  17: { label: "Special Conditions", urdu: "خصوصی شرائط", desc: "Any extra terms agreed upon by both parties." },
+  16: { label: "Property in lieu of Mehr", urdu: "مهر کے بدلے جائیداد", desc: "Details of any property given instead of cash dower." },
+  17: { label: "Right to Education/Work", urdu: "تعلیم اور ملازمت کا حق", desc: "Special condition ensuring the bride's right to continue studies or work post-marriage." },
   18: { label: "Delegation of Divorce", urdu: "حقِ طلاق کی تفویض", desc: "Crucial: Whether the husband gives the wife the right to divorce (Talaq-e-Tafweez)." },
   19: { label: "Husband's Right Curtailed", urdu: "شوہر کے حقِ طلاق پر پابندی", desc: "Any restrictions on the husband's power to divorce." },
   20: { label: "Maintenance/Documents", urdu: "نان و نفقہ/دستاویزات", desc: "Monthly maintenance (Kharchi) or other related marriage documents." },
@@ -49,7 +49,9 @@ export const ICONS = {
   chevronLeft: <i className="fas fa-chevron-left"></i>,
   shield: <i className="fas fa-shield-alt"></i>,
   info: <i className="fas fa-info-circle"></i>,
-  search: <i className="fas fa-search"></i>
+  search: <i className="fas fa-search"></i>,
+  file: <i className="fas fa-file-contract"></i>,
+  download: <i className="fas fa-download"></i>
 };
 
 export const TRANSLATIONS = {
