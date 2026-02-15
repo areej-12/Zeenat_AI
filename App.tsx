@@ -132,7 +132,10 @@ const App: React.FC = () => {
             <p className={`text-slate-500 mb-10 leading-relaxed text-lg ${isUrdu ? 'urdu-text text-right' : ''}`}>
               {isUrdu ? "دستاویز پر موجود کسی بھی کالم کو منتخب کریں تاکہ اس کے قانونی اثرات کا جائزہ لیا جا سکے۔ کالم 17 کو خاص طور پر چیک کریں۔" : "Select any column on the document to audit its legal implications. Pay special attention to Column 17."}
             </p>
-            <NikkahNamaMap onHotspotClick={(id) => startAnalysis({ action: 'Audit Column', column: NIKKAH_COLUMNS[id] })} />
+            <NikkahNamaMap 
+              onHotspotClick={(id) => startAnalysis({ action: 'Audit Column', column: NIKKAH_COLUMNS[id] })} 
+              language={language}
+            />
           </div>
         </div>
 
